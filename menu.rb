@@ -1,4 +1,4 @@
-menu = { 
+MENU = { 
 
   sections: [{
     name: "Tacos", 
@@ -12,12 +12,6 @@ menu = {
     {
       name: "Chorizo", 
       description: "pork, paprika, cumin, garlic",
-      price: 3.50
-
-    },
-    {
-      name: "Al Pastor", 
-      description: "Pork, achiote, pineapple",
       price: 3.50
 
     },

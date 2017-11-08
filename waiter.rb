@@ -1,14 +1,14 @@
-require './menu.rb'
+require "./menu.rb"
 
 menu_items = []
 
-menu[:sections].each do |section|
+MENU[:sections].each do |section|
   section[:items].each do |items|
     menu_items << items[:name].downcase
   end 
 end
 
-order = {}
+order = []
 
 def clear
   system "clear"
@@ -19,23 +19,19 @@ def space
 end
 
 
-def get_item(menu, hash, prompt)
-  menu[:sections].each do |section|
+def get_item(menu, order, prompt)
+  MENU[:sections].each do |section|
     section[:items].each do |items|
       if items[:name].downcase.include?(prompt)
-        item_name = (section[:name].capitalize.to_s + ": " + items[:name].capitalize.to_s)
-        if !hash.include?(item_name)
-          hash[item_name] = items[:price]
-        else
-          hash[(item_name + " 2nd")] = items[:price]
-        end
+        item_name = (section[:name].capitalize.to_s + " - " + items[:name].capitalize.to_s)
+        order << {item_name => items[:price]}
       end
     end
   end
 end
 
 def show_menu(menu)
-  menu[:sections].each do |section|
+  MENU[:sections].each do |section|
     puts "*"*30
     puts section[:name].upcase
     puts "*"*30
@@ -79,7 +75,7 @@ elsif prompt.include?("order")
 
     if menu_items.include?(prompt)
 
-      get_item(menu, order, prompt)
+      get_item(MENU, order, prompt)
 
       space
       puts "Great! What else. or (done ordering)"
@@ -108,13 +104,25 @@ prompt = gets.chomp
 
 if prompt.include?("check") && !order.empty?
 
-  subtotal = order.inject(0) { |sum, tuple| sum += tuple[1] }
+  sub_array = []
+
+  order.each do |item|
+    item.each do |value, price|
+      sub_array << price
+    end
+  end
   
+ subtotal = sub_array.inject(0) {|sum, i|  sum + i }
+
   space
-  puts "Your Order:"
+  clear
+
+  puts "RECEIPT:"
   space
-  order.each do |key, value|
-    puts "#{key}: $#{value}"
+  order.each do |item|
+    item.each do |key, value|
+    puts "#{key}: $#{("%.2f") % (value)}"
+    end
   end
 
   puts "="*19
@@ -127,12 +135,12 @@ if prompt.include?("check") && !order.empty?
 
   tip_20 = ("%.2f") % (total * 0.20)
 
-  puts "Subtotal: $#{("%.2f") % (subtotal)}",
-  "6\% tax is: $#{tax}",
-  "Total: $#{("%.2f") % (total)}",
-  "="*19,
-  "15\% Tip: $#{tip_15}",
-  "20\% Tip: $#{tip_20}"
+  printf "%20s", "Subtotal: $#{("%.2f") % (subtotal)}\n"
+  printf "%20s","6\% tax is: $#{tax}\n"
+  printf "%20s","Total: $#{("%.2f") % (total)}\n"
+  puts "="*19
+  printf "%20s","15\% Tip: $#{tip_15}\n"
+  printf "%20s","20\% Tip: $#{tip_20}\n"
 
 elsif prompt.include?("check") && order.empty?
   puts "You must place an order before asking for the check."
